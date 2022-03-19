@@ -7,18 +7,20 @@ $(".card .list-group").sortable({
   tolerance: 'pointer',
   helper: 'clone',
   activate: function (event) {
-    console.log('activate', this);
+    $('.bottom-trash').addClass('bottom-trash-drag')
+    $(this).addClass("dropover")
   }
 },
   {
     deactivate: function (event) {
-      console.log('deactivate', this)
+      $('bottom-trash').removeClass('bottom-trash-bag')
+      $(this).removeClass("dropover")
     },
     over: function (event) {
-      console.log('over', event.target);
+      $(event.target).addClass("dropover-active")
     },
     out: function (event) {
-      console.log('out', event.target);
+      $(event.target).removeClass("dropover-active")
     },
     update: function (event) {
       // loop over current set of children in sortable list
@@ -54,12 +56,15 @@ $('#trash').droppable({
   accept: '.card .list-group-item',
   tolerance: 'touch',
   drop: function (event, ui) {
+    $('.bottom-trash').removeClass('bottom-trash-active')
     ui.draggable.remove();
   },
   over: function (event, ui) {
+    $('.bottom-trash').addClass('.bottom-trash-active')
     console.log('over');
   },
   out: function (event, ui) {
+    ('.bottom-trash').removeClass('bottom-trash-active')
     console.log('out');
   }
 });
@@ -82,7 +87,7 @@ var auditTask = function (taskEl) {
   } else if (Math.abs(moment().diff(time, "days")) <= 2) {
     $(taskEl).addClass("list-group-item-warning");
   }
-
+  console.log(taskEl)
 }
 
 
@@ -150,7 +155,7 @@ $("#task-form-modal").on("shown.bs.modal", function () {
 });
 
 // save button in modal was clicked
-$("#task-form-modal .btn-primary").click(function () {
+$("#task-form-modal .btn-save").click(function () {
   // get form values
   var taskText = $("#modalTaskDescription").val();
   var taskDate = $("#modalDueDate").val();
@@ -268,6 +273,14 @@ $("#remove-tasks").on("click", function () {
   }
   saveTasks();
 });
+
+
+
+setInterval(function () {
+  $(".card .list-group-item").each(function (index, el) {
+    auditTask(el);
+  })
+}, 1800000);
 
 // load tasks for the first time
 loadTasks();
